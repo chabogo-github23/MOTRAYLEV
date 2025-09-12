@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Find Your Perfect Ride</h1>
+                <p class="lead mb-4">Reliable, safe, and affordable car rental services across Kenya. Book your vehicle today!</p>
+                <a href="{% url 'search_vehicles' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-search"></i> Search Vehicles
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4">Quick Vehicle Search</h3>
+                        <form method="get" action="{% url 'search_vehicles' %}">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ search_form.pickup_location.label_tag }}
+                                    {{ search_form.pickup_location }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ search_form.dropoff_location.label_tag }}
+                                    {{ search_form.dropoff_location }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ search_form.pickup_date.label_tag }}
+                                    {{ search_form.pickup_date }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ search_form.dropoff_date.label_tag }}
+                                    {{ search_form.dropoff_date }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ search_form.category.label_tag }}
+                                    {{ search_form.category }}
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-search"></i> Search Vehicles
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Vehicles -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Vehicles</h2>
+        <div class="row">
+            {% for vehicle in featured_vehicles %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 card-hover shadow-sm">
+                        {% if vehicle.photo %}
+                            <img src="{{ vehicle.photo.url }}" class="card-img-top" alt="{{ vehicle }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="/placeholder.svg?height=200&width=300" class="card-img-top" alt="{{ vehicle }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vehicle }}</h5>
+                            <p class="card-text">
+                                <small class="text-muted">{{ vehicle.category|title }} • {{ vehicle.condition|title }}</small><br>
+                                <strong class="text-primary">KES {{ vehicle.daily_rate }}/day</strong>
+                            </p>
+                            <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">No vehicles available at the moment.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose MOTRAYLEV?</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                    <h4>Safe & Reliable</h4>
+                    <p>All our vehicles are regularly maintained and inspected for your safety.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                    <h4>Affordable Rates</h4>
+                    <p>Competitive pricing with no hidden fees. Pay only for what you need.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Round-the-clock customer support for all your rental needs.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-map-marked-alt fa-2x"></i>
+                    </div>
+                    <h4>Multiple Locations</h4>
+                    <p>Convenient pickup and drop-off locations across Kenya.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

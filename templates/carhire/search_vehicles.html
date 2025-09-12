@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Vehicles - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">
+        <i class="fas fa-search"></i> Search Vehicles
+    </h1>
+    
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form.pickup_location.label_tag }}
+                        {{ form.pickup_location }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.dropoff_location.label_tag }}
+                        {{ form.dropoff_location }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.pickup_date.label_tag }}
+                        {{ form.pickup_date }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.dropoff_date.label_tag }}
+                        {{ form.dropoff_date }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.category.label_tag }}
+                        {{ form.category }}
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results -->
+    <div class="row">
+        {% for vehicle in vehicles %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 card-hover shadow-sm">
+                    {% if vehicle.photo %}
+                        <img src="{{ vehicle.photo.url }}" class="card-img-top" alt="{{ vehicle }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="/placeholder.svg?height=200&width=300" class="card-img-top" alt="{{ vehicle }}">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ vehicle }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="fas fa-tag"></i> {{ vehicle.category|title }} • 
+                                <i class="fas fa-star"></i> {{ vehicle.condition|title }} • 
+                                <i class="fas fa-tachometer-alt"></i> {{ vehicle.mileage|floatformat:0 }} km
+                            </small>
+                        </p>
+                        <p class="card-text flex-grow-1">{{ vehicle.description|truncatewords:15 }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-primary h5">KES {{ vehicle.daily_rate }}/day</strong>
+                                <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-primary">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-car fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No vehicles found</h4>
+                    <p class="text-muted">Try adjusting your search criteria</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

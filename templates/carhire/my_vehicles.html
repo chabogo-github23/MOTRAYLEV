@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}My Vehicles - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-car"></i> My Vehicles</h1>
+        <a href="{% url 'add_vehicle' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Vehicle
+        </a>
+    </div>
+    
+    {% if vehicles %}
+        <div class="row">
+            {% for vehicle in vehicles %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        {% if vehicle.photo %}
+                            <img src="{{ vehicle.photo.url }}" class="card-img-top" alt="{{ vehicle }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="/placeholder.svg?height=200&width=300" class="card-img-top" alt="{{ vehicle }}">
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ vehicle }}</h5>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    {{ vehicle.get_category_display }} • {{ vehicle.get_condition_display }} • {{ vehicle.mileage|floatformat:0 }} km
+                                </small>
+                            </p>
+                            <p class="card-text flex-grow-1">{{ vehicle.description|truncatewords:10 }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong class="text-primary">KES {{ vehicle.daily_rate }}/day</strong>
+                                    <div>
+                                        <span class="badge bg-{% if vehicle.approval_status == 'approved' %}success{% elif vehicle.approval_status == 'declined' %}danger{% else %}warning{% endif %}">
+                                            {{ vehicle.get_approval_status_display }}
+                                        </span>
+                                        
+                                        {% if vehicle.is_available %}
+                                            <span class="badge bg-info">Available</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Unavailable</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Admin Notes Display -->
+                                {% if vehicle.admin_notes %}
+                                    <div class="alert alert-{% if vehicle.approval_status == 'approved' %}success{% else %}warning{% endif %} small mb-2">
+                                        <strong>Admin Notes:</strong> {{ vehicle.admin_notes }}
+                                        {% if vehicle.reviewed_by %}
+                                            <br><small class="text-muted">
+                                                Reviewed by {{ vehicle.reviewed_by.username }} on {{ vehicle.reviewed_at|date:"M d, Y" }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="btn-group w-100" role="group">
+                                    <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{% url 'edit_vehicle' vehicle.id %}" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-car fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No vehicles added yet</h4>
+            <p class="text-muted">Start by adding your first vehicle to the platform</p>
+            <a href="{% url 'add_vehicle' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Your First Vehicle
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

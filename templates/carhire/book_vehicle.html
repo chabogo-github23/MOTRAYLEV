@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ vehicle }} - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-calendar-plus"></i> Book Vehicle</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="bookingForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.pickup_location.id_for_label }}" class="form-label">Pickup Location</label>
+                                {{ form.pickup_location }}
+                                {% if form.pickup_location.errors %}
+                                    <div class="text-danger">{{ form.pickup_location.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.dropoff_location.id_for_label }}" class="form-label">Dropoff Location</label>
+                                {{ form.dropoff_location }}
+                                {% if form.dropoff_location.errors %}
+                                    <div class="text-danger">{{ form.dropoff_location.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label">Pickup Date & Time</label>
+                                {{ form.start_date }}
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger">{{ form.start_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label">Dropoff Date & Time</label>
+                                {{ form.end_date }}
+                                {% if form.end_date.errors %}
+                                    <div class="text-danger">{{ form.end_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.drive_type.id_for_label }}" class="form-label">Drive Type</label>
+                            {{ form.drive_type }}
+                            {% if form.drive_type.errors %}
+                                <div class="text-danger">{{ form.drive_type.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                <strong>Self Drive:</strong> Requires valid driving license with 2+ years experience<br>
+                                <strong>With Chauffeur:</strong> Additional KES 1,000 per day
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Booking Summary</h6>
+                            <p class="mb-1"><strong>Vehicle:</strong> {{ vehicle }}</p>
+                            <p class="mb-1"><strong>Daily Rate:</strong> KES {{ vehicle.daily_rate }}</p>
+                            <p class="mb-0"><strong>Total cost will be calculated based on your selected dates and drive type.</strong></p>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-arrow-right"></i> Continue to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Vehicle Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-car"></i> Vehicle Details</h6>
+                </div>
+                <div class="card-body">
+                    {% if vehicle.photo %}
+                        <img src="{{ vehicle.photo.url }}" class="img-fluid rounded mb-3" alt="{{ vehicle }}">
+                    {% else %}
+                        <img src="/placeholder.svg?height=150&width=250" class="img-fluid rounded mb-3" alt="{{ vehicle }}">
+                    {% endif %}
+                    
+                    <h6>{{ vehicle }}</h6>
+                    <p class="text-muted mb-2">{{ vehicle.get_category_display }} • {{ vehicle.get_condition_display }}</p>
+                    <p class="text-primary h5">KES {{ vehicle.daily_rate }}/day</p>
+                </div>
+            </div>
+            
+            <!-- Requirements -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-clipboard-list"></i> Requirements</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Valid ID/Passport</li>
+                        <li><i class="fas fa-check text-success"></i> Valid driving license (for self-drive)</li>
+                        <li><i class="fas fa-check text-success"></i> 2+ years driving experience</li>
+                        <li><i class="fas fa-check text-success"></i> M-Pesa payment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

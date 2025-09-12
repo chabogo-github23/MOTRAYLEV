@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">
+        <i class="fas fa-calendar-alt"></i> 
+        {% if user.user_type == 'client' %}My Bookings{% else %}Vehicle Bookings{% endif %}
+    </h1>
+    
+    {% if page_obj %}
+        <div class="row">
+            {% for booking in page_obj %}
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ booking.booking_id }}</h6>
+                            <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'completed' %}primary{% elif booking.status == 'active' %}info{% else %}secondary{% endif %}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6>{{ booking.vehicle }}</h6>
+                                    {% if user.user_type != 'client' %}
+                                        <p class="text-muted mb-1">
+                                            <i class="fas fa-user"></i> {{ booking.client.username }}
+                                        </p>
+                                    {% endif %}
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-map-marker-alt"></i> 
+                                        {{ booking.pickup_location }} → {{ booking.dropoff_location }}
+                                    </p>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-calendar"></i> 
+                                        {{ booking.start_date|date:"M d" }} - {{ booking.end_date|date:"M d, Y" }}
+                                    </p>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-car"></i> {{ booking.get_drive_type_display }}
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <h5 class="text-success">KES {{ booking.total_cost }}</h5>
+                                    <small class="text-muted">{{ booking.total_days }} day{{ booking.total_days|pluralize }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="btn-group w-100" role="group">
+                                {% if booking.status == 'confirmed' and user.user_type == 'client' %}
+                                    <a href="{% url 'booking_receipt' booking.booking_id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-receipt"></i> Receipt
+                                    </a>
+                                {% endif %}
+                                <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#bookingModal{{ booking.id }}">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Details Modal -->
+                <div class="modal fade" id="bookingModal{{ booking.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Booking Details - {{ booking.booking_id }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Booking Information</h6>
+                                        <p><strong>Vehicle:</strong> {{ booking.vehicle }}</p>
+                                        <p><strong>Client:</strong> {{ booking.client.username }}</p>
+                                        <p><strong>Drive Type:</strong> {{ booking.get_drive_type_display }}</p>
+                                        <p><strong>Status:</strong> {{ booking.get_status_display }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Rental Period</h6>
+                                        <p><strong>Pickup:</strong> {{ booking.start_date|date:"F d, Y H:i" }}</p>
+                                        <p><strong>Dropoff:</strong> {{ booking.end_date|date:"F d, Y H:i" }}</p>
+                                        <p><strong>Duration:</strong> {{ booking.total_days }} day{{ booking.total_days|pluralize }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Locations</h6>
+                                        <p><strong>Pickup:</strong> {{ booking.pickup_location }}</p>
+                                        <p><strong>Dropoff:</strong> {{ booking.dropoff_location }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Cost Breakdown</h6>
+                                        <p><strong>Vehicle Cost:</strong> KES {{ booking.vehicle_cost }}</p>
+                                        {% if booking.chauffeur_cost > 0 %}
+                                            <p><strong>Chauffeur Cost:</strong> KES {{ booking.chauffeur_cost }}</p>
+                                        {% endif %}
+                                        <p><strong>Total:</strong> KES {{ booking.total_cost }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                {% if booking.status == 'confirmed' and user.user_type == 'client' %}
+                                    <a href="{% url 'booking_receipt' booking.booking_id %}" class="btn btn-primary">
+                                        View Receipt
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No bookings found</h4>
+            {% if user.user_type == 'client' %}
+                <p class="text-muted">Start by searching for available vehicles</p>
+                <a href="{% url 'search_vehicles' %}" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search Vehicles
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

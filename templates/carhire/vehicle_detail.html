@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ vehicle }} - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                {% if vehicle.photo %}
+                    <img src="{{ vehicle.photo.url }}" class="card-img-top" alt="{{ vehicle }}" style="height: 400px; object-fit: cover;">
+                {% else %}
+                    <img src="/placeholder.svg?height=400&width=600" class="card-img-top" alt="{{ vehicle }}">
+                {% endif %}
+                
+                <div class="card-body">
+                    <h2 class="card-title">{{ vehicle }}</h2>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Category:</strong> {{ vehicle.get_category_display }}</p>
+                            <p><strong>Condition:</strong> {{ vehicle.get_condition_display }}</p>
+                            <p><strong>Mileage:</strong> {{ vehicle.mileage|floatformat:0 }} km</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Year:</strong> {{ vehicle.year }}</p>
+                            <p><strong>Owner:</strong> {{ vehicle.owner.username }}</p>
+                            <p><strong>Daily Rate:</strong> <span class="text-primary h4">KES {{ vehicle.daily_rate }}</span></p>
+                        </div>
+                    </div>
+                    
+                    {% if vehicle.description %}
+                        <div class="mb-4">
+                            <h5>Description</h5>
+                            <p>{{ vehicle.description }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-{% if vehicle.condition == 'excellent' %}success{% elif vehicle.condition == 'good' %}primary{% else %}warning{% endif %} me-2">
+                            {{ vehicle.get_condition_display }}
+                        </span>
+                        <span class="badge bg-info">{{ vehicle.get_category_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-calendar-check"></i> Book This Vehicle</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated and user.user_type == 'client' %}
+                        <div class="mb-3">
+                            <h6 class="text-primary">Daily Rate: KES {{ vehicle.daily_rate }}</h6>
+                        </div>
+                        
+                        {% if search_params %}
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <strong>Your Search:</strong><br>
+                                    Pickup: {{ search_params.pickup_date|date:"M d, Y H:i" }}<br>
+                                    Dropoff: {{ search_params.dropoff_date|date:"M d, Y H:i" }}
+                                </small>
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'book_vehicle' vehicle.id %}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-calendar-plus"></i> Book Now
+                        </a>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt"></i> Secure booking process
+                            </small>
+                        </div>
+                    {% elif user.is_authenticated %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Only clients can book vehicles.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-sign-in-alt"></i> Please <a href="{% url 'login' %}">login</a> to book this vehicle.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Vehicle Features -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-check-circle"></i> Vehicle Features</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Air Conditioning</li>
+                        <li><i class="fas fa-check text-success"></i> GPS Navigation</li>
+                        <li><i class="fas fa-check text-success"></i> Insurance Included</li>
+                        <li><i class="fas fa-check text-success"></i> 24/7 Support</li>
+                        <li><i class="fas fa-check text-success"></i> Roadside Assistance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

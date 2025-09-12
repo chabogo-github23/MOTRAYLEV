@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">
+        <i class="fas fa-users"></i> Manage Users
+    </h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>User Type</th>
+                            <th>Phone</th>
+                            <th>Date Joined</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user_obj in users %}
+                            <tr>
+                                <td>{{ user_obj.username }}</td>
+                                <td>{{ user_obj.email }}</td>
+                                <td>
+                                    <span class="badge bg-{% if user_obj.user_type == 'admin' %}danger{% elif user_obj.user_type == 'owner' %}primary{% else %}info{% endif %}">
+                                        {{ user_obj.get_user_type_display }}
+                                    </span>
+                                </td>
+                                <td>{{ user_obj.phone_number|default:"-" }}</td>
+                                <td>{{ user_obj.date_joined|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if user_obj.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No users found</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

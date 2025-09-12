@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Receipt - {{ booking.booking_id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .company-name { color: #007bff; font-size: 24px; font-weight: bold; }
+        .section { margin-bottom: 20px; }
+        .section h3 { color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .total { font-weight: bold; font-size: 18px; color: #28a745; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">MOTRAYLEV Car Services</div>
+        <p>Reliable • Safe • Affordable</p>
+        <hr>
+    </div>
+    
+    <div class="section">
+        <h3>Booking Information</h3>
+        <div class="row">
+            <span>Booking ID:</span>
+            <span>{{ booking.booking_id }}</span>
+        </div>
+        <div class="row">
+            <span>Date:</span>
+            <span>{{ booking.created_at|date:"F d, Y H:i" }}</span>
+        </div>
+        <div class="row">
+            <span>Status:</span>
+            <span>{{ booking.get_status_display }}</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h3>Customer Information</h3>
+        <div class="row">
+            <span>Name:</span>
+            <span>{{ booking.client.get_full_name|default:booking.client.username }}</span>
+        </div>
+        <div class="row">
+            <span>Email:</span>
+            <span>{{ booking.client.email }}</span>
+        </div>
+        <div class="row">
+            <span>Phone:</span>
+            <span>{{ booking.client.phone_number }}</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h3>Vehicle & Rental Details</h3>
+        <div class="row">
+            <span>Vehicle:</span>
+            <span>{{ booking.vehicle }}</span>
+        </div>
+        <div class="row">
+            <span>Pickup:</span>
+            <span>{{ booking.pickup_location }} - {{ booking.start_date|date:"F d, Y H:i" }}</span>
+        </div>
+        <div class="row">
+            <span>Dropoff:</span>
+            <span>{{ booking.dropoff_location }} - {{ booking.end_date|date:"F d, Y H:i" }}</span>
+        </div>
+        <div class="row">
+            <span>Duration:</span>
+            <span>{{ booking.total_days }} day{{ booking.total_days|pluralize }}</span>
+        </div>
+        <div class="row">
+            <span>Drive Type:</span>
+            <span>{{ booking.get_drive_type_display }}</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h3>Payment Summary</h3>
+        <div class="row">
+            <span>Vehicle Rental:</span>
+            <span>KES {{ booking.vehicle_cost }}</span>
+        </div>
+        {% if booking.chauffeur_cost > 0 %}
+            <div class="row">
+                <span>Chauffeur Service:</span>
+                <span>KES {{ booking.chauffeur_cost }}</span>
+            </div>
+        {% endif %}
+        <hr>
+        <div class="row total">
+            <span>Total Amount Paid:</span>
+            <span>KES {{ booking.total_cost }}</span>
+        </div>
+        {% if booking.payment %}
+            <div class="row">
+                <span>Transaction ID:</span>
+                <span>{{ booking.payment.mpesa_transaction_id }}</span>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="footer">
+        <p>Thank you for choosing MOTRAYLEV Car Services!</p>
+        <p>For support: +254 700 000 000 | www.motraylev.co.ke</p>
+    </div>
+</body>
+</html>

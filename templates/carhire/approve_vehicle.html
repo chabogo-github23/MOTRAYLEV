@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Approve Vehicle - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-gavel"></i> Vehicle Approval</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Vehicle Details -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            {% if vehicle.photo %}
+                                <img src="{{ vehicle.photo.url }}" class="img-fluid rounded" alt="{{ vehicle }}">
+                            {% else %}
+                                <img src="/placeholder.svg?height=200&width=300" class="img-fluid rounded" alt="{{ vehicle }}">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h5>{{ vehicle }}</h5>
+                            <p><strong>Owner:</strong> {{ vehicle.owner.username }}</p>
+                            <p><strong>Category:</strong> {{ vehicle.get_category_display }}</p>
+                            <p><strong>Condition:</strong> {{ vehicle.get_condition_display }}</p>
+                            <p><strong>Mileage:</strong> {{ vehicle.mileage|floatformat:0 }} km</p>
+                            <p><strong>Daily Rate:</strong> KES {{ vehicle.daily_rate }}</p>
+                            <p><strong>Submitted:</strong> {{ vehicle.created_at|date:"M d, Y H:i" }}</p>
+                            {% if vehicle.description %}
+                                <p><strong>Description:</strong> {{ vehicle.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Current Status -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="fas fa-info-circle"></i> Current Status</h6>
+                        <p class="mb-1"><strong>Status:</strong> 
+                            <span class="badge bg-{% if vehicle.approval_status == 'approved' %}success{% elif vehicle.approval_status == 'declined' %}danger{% else %}warning{% endif %}">
+                                {{ vehicle.get_approval_status_display }}
+                            </span>
+                        </p>
+                        {% if vehicle.admin_notes %}
+                            <p class="mb-1"><strong>Previous Notes:</strong> {{ vehicle.admin_notes }}</p>
+                        {% endif %}
+                        {% if vehicle.reviewed_by %}
+                            <p class="mb-0"><strong>Reviewed by:</strong> {{ vehicle.reviewed_by.username }} on {{ vehicle.reviewed_at|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Approval Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label"><strong>Action Required:</strong></label>
+                            <div class="mt-2">
+                                {% for choice in form.action %}
+                                    <div class="form-check">
+                                        {{ choice.tag }}
+                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                            {% if choice.choice_value == 'approve' %}
+                                                <i class="fas fa-check text-success"></i> {{ choice.choice_label }}
+                                            {% else %}
+                                                <i class="fas fa-times text-danger"></i> {{ choice.choice_label }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.action.errors %}
+                                <div class="text-danger">{{ form.action.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.admin_notes.id_for_label }}" class="form-label">
+                                <strong>Admin Notes:</strong>
+                            </label>
+                            {{ form.admin_notes }}
+                            <div class="form-text">{{ form.admin_notes.help_text }}</div>
+                            {% if form.admin_notes.errors %}
+                                <div class="text-danger">{{ form.admin_notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'admin_vehicles' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Submit Decision
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle"></i> Approval Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <h6>Approve if:</h6>
+                    <ul class="small">
+                        <li>Vehicle information is complete and accurate</li>
+                        <li>Photo is clear and shows the vehicle properly</li>
+                        <li>Daily rate is reasonable</li>
+                        <li>Vehicle appears to be in good condition</li>
+                    </ul>
+
+                    <h6>Decline if:</h6>
+                    <ul class="small">
+                        <li>Missing or unclear vehicle photo</li>
+                        <li>Incomplete vehicle information</li>
+                        <li>Unreasonable daily rate</li>
+                        <li>Vehicle appears damaged or unsafe</li>
+                        <li>Suspicious or fraudulent listing</li>
+                    </ul>
+
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Note:</strong> Always provide clear reasons when declining a vehicle.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

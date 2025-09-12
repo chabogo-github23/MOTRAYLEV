@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Receipt - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h3><i class="fas fa-check-circle"></i> Booking Confirmed!</h3>
+                    <p class="mb-0">Your payment has been processed successfully</p>
+                </div>
+                
+                <div class="card-body" id="receiptContent">
+                    <!-- Company Header -->
+                    <div class="text-center mb-4">
+                        <h2 class="text-primary">MOTRAYLEV Car Services</h2>
+                        <p class="text-muted">Reliable • Safe • Affordable</p>
+                        <hr>
+                    </div>
+                    
+                    <!-- Booking Details -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Booking Information</h5>
+                            <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+                            <p><strong>Date:</strong> {{ booking.created_at|date:"F d, Y H:i" }}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-success">{{ booking.get_status_display }}</span>
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <p><strong>Name:</strong> {{ booking.client.get_full_name|default:booking.client.username }}</p>
+                            <p><strong>Email:</strong> {{ booking.client.email }}</p>
+                            <p><strong>Phone:</strong> {{ booking.client.phone_number }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Vehicle Details -->
+                    <div class="mb-4">
+                        <h5>Vehicle Details</h5>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <p><strong>Vehicle:</strong> {{ booking.vehicle }}</p>
+                                <p><strong>Category:</strong> {{ booking.vehicle.get_category_display }}</p>
+                                <p><strong>Condition:</strong> {{ booking.vehicle.get_condition_display }}</p>
+                                <p><strong>Daily Rate:</strong> KES {{ booking.vehicle.daily_rate }}</p>
+                            </div>
+                            {% if booking.vehicle.photo %}
+                                <div class="col-md-4">
+                                    <img src="{{ booking.vehicle.photo.url }}" class="img-fluid rounded" alt="{{ booking.vehicle }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Rental Details -->
+                    <div class="mb-4">
+                        <h5>Rental Details</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Pickup Location:</strong> {{ booking.pickup_location }}</p>
+                                <p><strong>Pickup Date:</strong> {{ booking.start_date|date:"F d, Y H:i" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Dropoff Location:</strong> {{ booking.dropoff_location }}</p>
+                                <p><strong>Dropoff Date:</strong> {{ booking.end_date|date:"F d, Y H:i" }}</p>
+                            </div>
+                        </div>
+                        <p><strong>Duration:</strong> {{ booking.total_days }} day{{ booking.total_days|pluralize }}</p>
+                        <p><strong>Drive Type:</strong> {{ booking.get_drive_type_display }}</p>
+                    </div>
+                    
+                    <!-- Payment Details -->
+                    <div class="mb-4">
+                        <h5>Payment Summary</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>Vehicle Rental ({{ booking.total_days }} day{{ booking.total_days|pluralize }} × KES {{ booking.vehicle.daily_rate }}):</td>
+                                <td class="text-end">KES {{ booking.vehicle_cost }}</td>
+                            </tr>
+                            {% if booking.chauffeur_cost > 0 %}
+                                <tr>
+                                    <td>Chauffeur Service ({{ booking.total_days }} day{{ booking.total_days|pluralize }} × KES 1,000):</td>
+                                    <td class="text-end">KES {{ booking.chauffeur_cost }}</td>
+                                </tr>
+                            {% endif %}
+                            <tr class="border-top">
+                                <td><strong>Total Amount Paid:</strong></td>
+                                <td class="text-end"><strong class="text-success">KES {{ booking.total_cost }}</strong></td>
+                            </tr>
+                        </table>
+                        
+                        {% if booking.payment %}
+                            <p><strong>Payment Method:</strong> M-Pesa</p>
+                            <p><strong>Transaction ID:</strong> {{ booking.payment.mpesa_transaction_id }}</p>
+                            <p><strong>Payment Date:</strong> {{ booking.payment.completed_at|date:"F d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="mb-4">
+                        <h6>Important Information</h6>
+                        <ul class="small text-muted">
+                            <li>Please arrive at the pickup location 15 minutes before your scheduled time</li>
+                            <li>Bring a valid ID and driving license (for self-drive)</li>
+                            <li>Vehicle inspection will be conducted before and after rental</li>
+                            <li>Any damages will be charged separately</li>
+                            <li>For support, call +254 700 000 000</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="text-center border-top pt-3">
+                        <p class="text-muted small mb-0">Thank you for choosing MOTRAYLEV Car Services!</p>
+                        <p class="text-muted small">Visit us at www.motraylev.co.ke</p>
+                    </div>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <a href="{% url 'download_receipt' booking.booking_id %}" class="btn btn-primary me-2">
+                        <i class="fas fa-download"></i> Download Receipt
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

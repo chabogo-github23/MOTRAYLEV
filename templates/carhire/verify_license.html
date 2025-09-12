@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify License - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4><i class="fas fa-id-card"></i> License Verification</h4>
+                </div>
+                <div class="card-body">
+                    <!-- License Details -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>License Information</h5>
+                            <p><strong>User:</strong> {{ license.user.username }}</p>
+                            <p><strong>Email:</strong> {{ license.user.email }}</p>
+                            <p><strong>Phone:</strong> {{ license.user.phone_number }}</p>
+                            <p><strong>License Number:</strong> {{ license.license_number }}</p>
+                            <p><strong>Expiry Date:</strong> {{ license.expiry_date|date:"M d, Y" }}</p>
+                            <p><strong>Uploaded:</strong> {{ license.uploaded_at|date:"M d, Y H:i" }}</p>
+                            <p><strong>Years of Experience:</strong> {{ license.user.years_of_experience|default:"Not specified" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if license.license_image %}
+                                <h6>License Image:</h6>
+                                <img src="{{ license.license_image.url }}" class="img-fluid rounded border" alt="License Image" style="max-height: 300px;">
+                                <div class="mt-2">
+                                    <a href="{{ license.license_image.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-external-link-alt"></i> View Full Size
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> No license image uploaded
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Current Status -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="fas fa-info-circle"></i> Current Status</h6>
+                        <p class="mb-1"><strong>Status:</strong> 
+                            <span class="badge bg-{% if license.verification_status == 'verified' %}success{% elif license.verification_status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                {{ license.get_verification_status_display }}
+                            </span>
+                        </p>
+                        {% if license.admin_notes %}
+                            <p class="mb-1"><strong>Previous Notes:</strong> {{ license.admin_notes }}</p>
+                        {% endif %}
+                        {% if license.verified_by %}
+                            <p class="mb-0"><strong>Reviewed by:</strong> {{ license.verified_by.username }} on {{ license.verified_at|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Verification Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label"><strong>Action Required:</strong></label>
+                            <div class="mt-2">
+                                {% for choice in form.action %}
+                                    <div class="form-check">
+                                        {{ choice.tag }}
+                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                            {% if choice.choice_value == 'verify' %}
+                                                <i class="fas fa-check text-success"></i> {{ choice.choice_label }}
+                                            {% else %}
+                                                <i class="fas fa-times text-danger"></i> {{ choice.choice_label }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.action.errors %}
+                                <div class="text-danger">{{ form.action.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.admin_notes.id_for_label }}" class="form-label">
+                                <strong>Admin Notes:</strong>
+                            </label>
+                            {{ form.admin_notes }}
+                            <div class="form-text">{{ form.admin_notes.help_text }}</div>
+                            {% if form.admin_notes.errors %}
+                                <div class="text-danger">{{ form.admin_notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'admin_licenses' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save"></i> Submit Decision
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle"></i> Verification Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <h6>Verify if:</h6>
+                    <ul class="small">
+                        <li>License image is clear and readable</li>
+                        <li>License number matches the entered data</li>
+                        <li>License is not expired</li>
+                        <li>License appears genuine and unaltered</li>
+                        <li>User has sufficient driving experience (2+ years)</li>
+                    </ul>
+
+                    <h6>Reject if:</h6>
+                    <ul class="small">
+                        <li>License image is unclear or unreadable</li>
+                        <li>License appears fake or altered</li>
+                        <li>License is expired</li>
+                        <li>Information doesn't match</li>
+                        <li>Insufficient driving experience</li>
+                        <li>Suspicious or fraudulent submission</li>
+                    </ul>
+
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Note:</strong> Always provide clear reasons when rejecting a license.
+                    </div>
+                </div>
+            </div>
+
+            <!-- License Validity Check -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-calendar-check"></i> License Validity</h6>
+                </div>
+                <div class="card-body">
+                    {% if license.expiry_date %}
+                        {% now "Y-m-d" as today %}
+                        {% if license.expiry_date|date:"Y-m-d" > today %}
+                            <div class="alert alert-success small">
+                                <i class="fas fa-check-circle"></i> License is valid until {{ license.expiry_date|date:"M d, Y" }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger small">
+                                <i class="fas fa-exclamation-circle"></i> License expired on {{ license.expiry_date|date:"M d, Y" }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

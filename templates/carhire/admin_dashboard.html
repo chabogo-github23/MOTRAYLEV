@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - MOTRAYLEV Car Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-cogs"></i> Admin Dashboard
+            </h1>
+            <p class="lead">System Overview and Management</p>
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h3>{{ total_users }}</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-car fa-2x mb-2"></i>
+                    <h3>{{ total_vehicles }}</h3>
+                    <p>Total Vehicles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                    <h3>{{ total_bookings }}</h3>
+                    <p>Total Bookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h3>{{ pending_approvals }}</h3>
+                    <p>Pending Approvals</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Management Actions -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-car"></i> Vehicle Management</h5>
+                </div>
+                <div class="card-body">
+                    <p>Manage and approve vehicle listings</p>
+                    <a href="{% url 'admin_vehicles' %}" class="btn btn-primary">
+                        <i class="fas fa-cog"></i> Manage Vehicles
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-users"></i> User Management</h5>
+                </div>
+                <div class="card-body">
+                    <p>View and manage user accounts</p>
+                    <a href="{% url 'admin_users' %}" class="btn btn-success">
+                        <i class="fas fa-users"></i> Manage Users
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-id-card"></i> License Verification</h5>
+                </div>
+                <div class="card-body">
+                    <p>Verify driving licenses</p>
+                    <a href="{% url 'admin_licenses' %}" class="btn btn-info">
+                        <i class="fas fa-check"></i> Verify Licenses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
