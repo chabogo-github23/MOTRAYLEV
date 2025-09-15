@@ -16,6 +16,8 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+import dj_database_url
+
 
 
 
@@ -28,13 +30,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#^tz1ix8enrw*^56s1g@jpi9b#+7@#q^xwkkw)c^4%%$$!3!-q'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config("DEBUG", cast=bool)
 
-ALLOWED_HOSTS = ['motraylev.railway.internal', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://motraylev.railway.internal' ]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -103,21 +104,12 @@ WSGI_APPLICATION = 'motraylev.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'MdSYQglLCsLoicColhsXyPtHxUrCKZXm',
-        'HOST': 'maglev.proxy.rlwy.net',
-        'PORT': '15888',
+       'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-#DATABASES = {
-#    'default': {
-#       'ENGINE': 'django.db.backends.sqlite3',
- #       'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
 
+DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -214,6 +206,6 @@ LOGGING = {
 }
 
 
-NGROK_AUTH_TOKEN = "30XYPx5qIqVdeYvWL7Kk0XH5h5B_2ugE91HGRhTZX1BaqrU84"
+NGROK_AUTH_TOKEN = config("NGROK_AUTH_TOKEN")
 
 
