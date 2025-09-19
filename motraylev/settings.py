@@ -35,8 +35,8 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool)
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
-
+#ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'carhire',
     'cloudinary',
-    'crispy_forms',
-    'crispy_bootstrap5',
     'cloudinary_storage',
 ]
 CLOUDINARY_STORAGE = {

@@ -95,6 +95,10 @@
                                                     <a href="{% url 'booking_receipt' booking.booking_id %}" class="btn btn-sm btn-outline-primary">
                                                         View Receipt
                                                     </a>
+                                                {% elif booking.status == 'pending' %}
+                                                    <a href="{% url 'payment' booking.booking_id %}" class="btn btn-sm btn-outline-warning">
+                                                        Complete Payment
+                                                    </a>
                                                 {% endif %}
                                             </td>
                                         </tr>
