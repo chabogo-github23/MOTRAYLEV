@@ -96,7 +96,7 @@
                                                         View Receipt
                                                     </a>
                                                 {% elif booking.status == 'pending' %}
-                                                    <a href="{% url 'payment' booking.booking_id %}" class="btn btn-sm btn-outline-warning">
+                                                    <a href="{% url 'payment' booking.booking_id %}" class="btn btn-sm btn-outline-primary">
                                                         Complete Payment
                                                     </a>
                                                 {% endif %}
