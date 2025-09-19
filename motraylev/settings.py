@@ -181,7 +181,6 @@ PAYSTACK_TEST_MODE = False
 
 # Site URL for callbacks
 SITE_URL = config('SITE_URL', default='http://127.0.0.1:8000')
-#NGROK_AUTH_TOKEN = "30ul1qjuqdaPQQw5JLxhQtgWr61_4MX38mXUrmXRWjVMy1BfA"
 
 # Logging
 LOGGING = {
