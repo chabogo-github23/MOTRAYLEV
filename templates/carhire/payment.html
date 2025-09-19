@@ -5,26 +5,148 @@
 
 {% block extra_css %}
 <style>
-    .payment-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-    .booking-summary { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 30px; border-left: 4px solid #007bff; }
-    .payment-form { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .payment-methods { display: flex; justify-content: space-around; margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
-    .payment-method { text-align: center; padding: 10px; }
-    .payment-method img { height: 30px; margin-bottom: 5px; }
-    .amount-display { font-size: 2rem; font-weight: bold; text-align: center; margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 10px; }
-    .pay-button { width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold; background: linear-gradient(135deg, #28a745, #20c997); border: none; border-radius: 8px; color: white; transition: all 0.3s ease; }
-    .pay-button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); }
-    .pay-button:disabled { background: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }
-    .loading-spinner { display: none; text-align: center; margin: 20px 0; }
-    .security-info { background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 8px; padding: 15px; margin: 20px 0; }
-    .security-info i { color: #007bff; margin-right: 10px; }
+    /* Container */
+    .payment-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 25px;
+    }
+
+    h2 {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    /* Booking Summary */
+    .booking-summary {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 35px;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
+    .booking-summary h4 {
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #007bff;
+    }
+
+    .booking-summary p {
+        margin-bottom: 8px;
+        color: #555;
+    }
+
+    .booking-summary strong {
+        color: #212529;
+    }
+
+    /* Total row */
+    .booking-summary hr {
+        margin: 15px 0;
+    }
+
+    .booking-summary .row:last-child {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Payment Form */
+    .payment-form {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    /* Amount Display */
+    .amount-display {
+        font-size: 1.6rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 25px;
+        padding: 18px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: #fff;
+        border-radius: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px dashed #dee2e6;
+    }
+
+    .payment-method {
+        text-align: center;
+        padding: 10px 20px;
+        transition: transform 0.2s ease;
+    }
+
+    .payment-method:hover {
+        transform: translateY(-3px);
+    }
+
+    .payment-method i {
+        margin-bottom: 8px;
+    }
+
+    /* Pay Button */
+    .pay-button {
+        width: 100%;
+        padding: 16px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .pay-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 18px rgba(32, 201, 151, 0.35);
+    }
+
+    .pay-button:disabled {
+        background: #adb5bd;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Security Info (optional reuse) */
+    .security-info {
+        background: #e9f7ff;
+        border: 1px solid #cce5ff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #004085;
+    }
+
+    .security-info i {
+        color: #007bff;
+        margin-right: 8px;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="payment-container">
-        <h2 class="text-center mb-4"><i class="fas fa-credit-card"></i> Complete Your Payment</h2>
+        <h2 class="text-center mb-4">
+            <i class="fas fa-credit-card"></i> Complete Your Payment
+        </h2>
 
         <!-- Booking Summary -->
         <div class="booking-summary">
@@ -70,6 +192,10 @@
                     <i class="fas fa-lock"></i> Pay KES {{ booking.total_cost }} Securely
                 </button>
             </form>
+
+            <div class="security-info mt-3">
+                <i class="fas fa-shield-alt"></i> Your payment is encrypted and secure.
+            </div>
         </div>
     </div>
 </div>

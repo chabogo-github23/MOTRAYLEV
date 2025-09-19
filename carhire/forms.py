@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
 from .models import User, Vehicle, Payment, Booking, DrivingLicense, Location
 from datetime import datetime, timedelta
+from django.core.exceptions import ValidationError
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -148,10 +149,16 @@ class PaymentForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-    def clean_phone_number(self):
-        phone = self.cleaned_data['phone_number']
-        if not phone.startswith('254'):
-            raise forms.ValidationError("Phone number must start with 254")
-        if len(phone) != 12:
-            raise forms.ValidationError("Phone number must be 12 digits long")
-        return phone
+    def clean_mpesa_number(self):
+        mpesa_number = self.cleaned_data.get('mpesa_number')
+        
+        # Remove any non-digit characters
+        mpesa_number = ''.join(filter(str.isdigit, mpesa_number))
+        
+        if len(mpesa_number) != 9:
+            raise ValidationError("Please enter a valid 9-digit phone number (e.g., 712345678).")
+        
+        if not mpesa_number.startswith(('7', '1')):
+            raise ValidationError("Phone number should start with 7 or 1.")
+        
+        return mpesa_number
